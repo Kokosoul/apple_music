@@ -2,6 +2,7 @@ const express = require("express");
 const request = require("request");
 const cors = require("cors");
 const app = express();
+const path = require("path");
 
 app.get("/music", cors(), async (req, res) => {
   try {
@@ -21,6 +22,13 @@ app.get("/music", cors(), async (req, res) => {
   }
 });
 
-const PORT = process.env.PORT || 3100;
+// Serve static assets in production
+if (process.env.NODE_ENV === "production") {
+  // Set static folder
+  app.use(express.static("client/build"));
+  app.get("*", (req, res) => {
+    res.sendFile(path.resolve(__dirname, "client", "build", "index.html"));
+  });
+}
 
-app.listen(PORT, () => console.log(`Server started ${PORT}`));
+const PORT = process.env.PORT || 3100;
